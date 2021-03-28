@@ -7,22 +7,315 @@
         <link rel="stylesheet" href="main.css"/>
         <!--Feel free to add more CSS files as needed-->
         <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
     </head>
 <body>
     <div class="header">
         <h3>Assignment 6 &laquo; Data Visualization Dashboard &raquo;</h3>
+        <h3>Video Game Sales </h3>
     </div>
     <!--  We included a basic HTML structure for the 3 graphs here. Feel free to change this if you'd like  -->
     <div class="row">
         <div class="col-lg-6">
+            <h2>Graph 1</h2>
+            Top 10 video games of all time
             <div id="graph1"></div>
+            <h2>Graph 2</h2>
+            Genre sales broken out per region
+            <br/>
+            <button onclick="update(data1)">North America</button>
+            <button onclick="update(data2)">Europe</button>
+            <button onclick="update(data3)">Japan</button>
+            <button onclick="update(data4)">Other</button>
             <div id="graph2"></div><br/>
         </div>
         <div class="col-lg-6">
+            <h2>Graph 3</h2>
+            Top publisher for each genre
             <div id="graph3"></div>
         </div>
+
     </div>
     <!--Feel free to add more JavaScript files as needed-->
     <script type="text/javascript" src="main.js"></script>
+
+    <script>
+
+        d3.csv("./data/video_games.csv").then(function(data){
+            var genres = d3.map(data, function(d){
+                return(d.Genre)
+            }).keys();
+
+            var publishers = d3.map(data, function(d){
+                return(d.Publisher)
+            }).keys();
+
+            var visited = [];
+            console.log(visited);
+
+            var groupData = getTopPublishers(data, visited, genres, publishers);
+            console.log("groupData: ", groupData);
+            console.log(visited);
+
+            var margins = {top: 20, right: 20, bottom: 30, left: 40},
+                widths = 600 - margins.left - margins.right,
+                heights = 400 - margins.top - margins.bottom;
+
+            var x0  = d3.scaleBand()
+                .rangeRound([0, widths], .5);
+            var x1  = d3.scaleBand();
+            var y   = d3.scaleLinear()
+                .rangeRound([heights, 0]);
+            var xAxis = d3.axisBottom().scale(x0)
+                        .tickValues(groupData.map(d=>d.key));
+            var yAxis = d3.axisLeft()
+                .scale(y);
+            const color = d3.scaleOrdinal(d3.schemePaired);
+
+            var svg3 = d3.select('body').append("svg")
+                .attr("width", widths + margin.left + margin.right)
+                .attr("height", heights + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var categoriesNames = groupData.map(function(d) { return d.key; });
+            var rateNames       = groupData[0].values.map(function(d) { return d.grpName; });
+
+
+            x0.domain(categoriesNames);
+            x1.domain(rateNames).rangeRound([0, x0.bandwidth()]);
+            y.domain([0, d3.max(groupData, function(key) { return d3.max(key.values, function(d) { return parseInt(d.grpValue); }); })]);
+
+            svg3.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + heights + ")")
+            .call(xAxis);
+
+            svg3.append("g")
+            .attr("class", "y axis")
+            .style('opacity','0')
+            .call(yAxis)
+                .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .style('font-weight','bold')
+                    .text("Value");
+
+            svg3.select('.y').transition().duration(500).delay(1300).style('opacity','1');
+
+            var slice = svg3.selectAll(".slice")
+                .data(groupData)
+                .enter().append("g")
+                .attr("class", "g")
+                .attr("transform",function(d) { return "translate(" + x0(d.key) + ",0)"; });
+
+            slice.selectAll("rect")
+                .data(function(d) { return d.values; })
+                .enter().append("rect")
+                    .attr("width", x1.bandwidth())
+                    .attr("x", function(d) { return x1(d.grpName); })
+                    .style("fill", function(d) { return color(d.grpName) })
+                    .attr("y", function(d) { return y(0); })
+                    .attr("height", function(d) { return heights - y(0); })
+                    .on("mouseover", function(d) {
+                        d3.select(this).style("fill", d3.rgb(color(d.grpName)).darker(2));
+                    })
+                    .on("mouseout", function(d) {
+                        d3.select(this).style("fill", color(d.grpName));
+                    });
+
+            slice.selectAll("rect")
+                .transition()
+                .delay(function (d) {return Math.random()*1000;})
+                .duration(1000)
+                .attr("y", function(d) { return y(d.grpValue); })
+                .attr("height", function(d) { return heights- y(d.grpValue); });
+
+                //Legend
+            var legend = svg3.selectAll(".legend")
+                .data(visited.map(function(d) { return d; }))
+                .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function(d,i) { return "translate(0," + i * 20 + ")"; })
+                .style("opacity","0");
+
+            legend.append("rect")
+                .attr("x", widths - 18)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", function(d) { return color(d); });
+
+            legend.append("text")
+                .attr("x", widths - 24)
+                .attr("y", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "end")
+                .text(function(d) {return d; });
+
+            legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
+                    
+
+            svg3.append("text")
+                .attr("transform", `translate(-90,150)`)       // HINT: Place this at the bottom middle edge of the graph - use translate(x, y) that we discussed earlier
+                .style("text-anchor", "middle")
+                .text("Global Sales (Mn USD)");
+            // Adds y-axis label
+            svg3.append("text")
+                .attr("transform", `translate(200, 390)`)       // HINT: Place this at the center left edge of the graph - use translate(x, y) that we discussed earlier
+                .style("text-anchor", "middle")
+                .text("Genre");
+            // Adds chart title
+            svg3.append("text")
+                .attr("transform", `translate(220, -20)`)       // HINT: Place this at the top middle edge of the graph - use translate(x, y) that we discussed earlier
+                .style("text-anchor", "middle")
+                .style("font-size", 19)
+                .text("Top Publisher for each Video Game Genre");
+
+            svg3.append("text")
+                .attr("transform", `translate(220, -5)`)       // HINT: Place this at the top middle edge of the graph - use translate(x, y) that we discussed earlier
+                .style("text-anchor", "middle")
+                .style("font-size", 13)
+                .text("measured by Global Sales (Mn USD)");
+                });
+                /*
+        const groupData = [
+                 { key: 'Sports', values:
+                                              [
+                                                {grpName:'Activision', grpValue:26},
+                                                {grpName:'Nintendo', grpValue:15},
+                                                {grpName:'Sony Computer Entertainment', grpValue:48},
+                                                {grpName: 'Take-Two Interactive', grpValue: 12},
+                                                {grpName: 'Microsoft Game Studios', grpValue: 12},
+                                              ]
+                 },
+                 { key: 'Platform', values:
+                                              [
+                                                {grpName:'Activision', grpValue:14},
+                                                {grpName:'Nintendo', grpValue:23},
+                                                {grpName:'Sony Computer Entertainment', grpValue:5},
+                                                {grpName:'Take-Two Interactive', grpValue:23},
+                                                {grpName:'Microsoft Game Studios', grpValue:5}
+                                              ]
+                 },
+                 { key: 'Racing', values:
+                                              [
+                                                {grpName:'Activision', grpValue:32},
+                                                {grpName:'Nintendo', grpValue:9},
+                                                {grpName:'Sony Computer Entertainment', grpValue:25},
+                                                {grpName:'Take-Two Interactive', grpValue:23},
+                                                {grpName:'Microsoft Game Studios', grpValue:5}
+                                              ]
+                 },
+                 { key: 'Role-Playing', values:
+                                              [
+                                                {grpName:'Activision', grpValue:41},
+                                                {grpName:'Nintendo', grpValue:55},
+                                                {grpName:'Sony Computer Entertainment', grpValue:26},
+                                                {grpName:'Take-Two Interactive', grpValue:23},
+                                                {grpName:'Microsoft Game Studios', grpValue:5}
+                                              ]
+                 },
+                 { key: 'Shooter', values:
+                                              [
+                                                {grpName:'Activision', grpValue:26},
+                                                {grpName:'Nintendo', grpValue:15},
+                                                {grpName:'Sony Computer Entertainment', grpValue:48},
+                                                {grpName: 'Take-Two Interactive', grpValue: 12},
+                                                {grpName: 'Microsoft Game Studios', grpValue: 12},
+                                              ]
+                 },
+                 { key: 'Simulation', values:
+                                              [
+                                                {grpName:'Activision', grpValue:14},
+                                                {grpName:'Nintendo', grpValue:23},
+                                                {grpName:'Sony Computer Entertainment', grpValue:5},
+                                                {grpName:'Take-Two Interactive', grpValue:23},
+                                                {grpName:'Microsoft Game Studios', grpValue:5}
+                                              ]
+                 },
+                 { key: 'Misc', values:
+                                              [
+                                                {grpName:'Activision', grpValue:32},
+                                                {grpName:'Nintendo', grpValue:9},
+                                                {grpName:'Sony Computer Entertainment', grpValue:25},
+                                                {grpName:'Take-Two Interactive', grpValue:23},
+                                                {grpName:'Microsoft Game Studios', grpValue:5}
+                                              ]
+                 },
+                 { key: 'Action', values:
+                                              [
+                                                {grpName:'Activision', grpValue:41},
+                                                {grpName:'Nintendo', grpValue:55},
+                                                {grpName:'Sony Computer Entertainment', grpValue:26},
+                                                {grpName:'Take-Two Interactive', grpValue:23},
+                                                {grpName:'Microsoft Game Studios', grpValue:5}
+                                              ]
+                 },
+                 { key: 'Fighting', values:
+                                              [
+                                                {grpName:'Activision', grpValue:41},
+                                                {grpName:'Nintendo', grpValue:55},
+                                                {grpName:'Sony Computer Entertainment', grpValue:26},
+                                                {grpName:'Take-Two Interactive', grpValue:23},
+                                                {grpName:'Microsoft Game Studios', grpValue:5}
+                                              ]
+                 }                                                         
+                  ];
+                  */
+
+    
+
+    
+        function getTopPublishers(data, visited, genres, publishers) {
+            var groupData = [];
+            genres.forEach(element => {
+                var category = [];
+                var tempData  = data.filter(function(a) { 
+                    return a.Genre === element; 
+                });
+                
+                // for each data in tempdata, add the sales for each publisher
+                var pub = [];
+                publishers.forEach(publisher => {
+                    var num = 0;
+                    tempData.forEach(item => {
+                        if (item.Publisher === publisher) {
+                            num += parseFloat(item['Global_Sales']);
+                        }
+                    });
+                    pub.push([num, publisher]);
+                    
+                })
+                pub = pub.sort(function(a, b){return b[0]-a[0]}).slice(0, 1);
+                //console.log("sorted: ", element, pub);
+
+                pub.forEach(element => {
+                    category.push({'grpName' : element[1], grpValue: element[0].toFixed(2)})
+                    if (!visited.includes(element[1]) ) {
+                        visited.push(element[1])
+                    }
+                    //category['grpName'] = element[1]
+                    //category['grpValue'] = element[0]
+                })
+                // arr.push([num, element]);
+                //console.log("pub", category)
+                groupData.push({"key" : element, "values": category})
+            });
+            return groupData;
+        }
+        </script>
+        <div>
+            <p>
+
+                1. Describe how your dashboard answers the questions presented. You don't have to address every question directly, but should at a high level address the main questions. (10 points)
+                2. List 3 reasons why D3 was helpful and improved your visualization (6 points)
+                3. List 3 reasons why D3 would not be the best tool for creating a visualization (6 points)
+            </p>
+        </div>
+
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3-scale-radial.js"></script>
 </body>
 </html>
