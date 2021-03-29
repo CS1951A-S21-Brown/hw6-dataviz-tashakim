@@ -1,14 +1,6 @@
-.row {
-    display:flex;
-}
-
-.col-lg-6 {
-    flex: auto;
-}
-
 * {
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
     text-align: center;
 }
 
@@ -17,11 +9,95 @@
     margin-bottom: 20px;
 }
 
-.header > h3, h5 {
+.header > h5 {
     margin: 0;
     padding-top: 20px;
     text-align: center;
 }
 
+#questions {
+    margin: auto;
+    max-width: 1300px;
 
+}
+
+.demo-1 .main h2 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-weight: normal;
+	font-family: 'Ultra', sans-serif;   
+	font-size: 36px;
+	line-height: 42px;
+	text-transform: uppercase;
+	text-shadow: 0 2px white, 0 3px #777;
+}
+
+.demo-1 .main h3 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-weight: normal;
+	font-size: 30px;
+	line-height: 40px;
+	font-family: 'Orienta', sans-serif;
+}
+
+.demo-1 .main h3 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-size: 22px;
+	line-height: 40px;
+	font-weight: normal;
+	text-transform: uppercase;
+	font-family: 'Orienta', sans-serif;
+	letter-spacing: 1px;
+	font-style: italic;
+}
+
+.demo-1 .main h4 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-size: 18px;
+	line-height: 20px;
+	font-weight: normal;
+	font-family: 'Orienta', sans-serif;
+}
+
+button {
+    display: inline-block;
+    background-color: #7b38d8;
+    border-radius: 10px;
+    border: 4px double #cccccc;
+    color: #eeeeee;
+    text-align: center;
+    font-size: 13px;
+    padding: 9px;
+    width: 150px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+  }
+  button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  button span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+  button:hover {
+    background-color: #f7c2f9;
+  }
+  button:hover span {
+    padding-right: 25px;
+  }
+  button:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
 /* Include any custom CSS styling here! */

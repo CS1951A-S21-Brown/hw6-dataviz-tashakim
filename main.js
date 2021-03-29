@@ -11,17 +11,17 @@ let graph_3_width = MAX_WIDTH / 2, graph_3_height = 575;
 let svg1 = d3.select('#graph1')
     .append("svg")
     .attr("width", graph_1_width)
-    .attr("height", graph_1_height)
+    .attr("height", graph_1_height + margin.bottom + margin.top)
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 ////////////////////////////////////////////////////////////////////////
 
 let svg2 = d3.select('#graph2')
     .append("svg")
-    .attr("width", graph_2_width + margin.left + margin.right)
-    .attr("height", graph_2_height + margin.top + margin.bottom)
+    .attr("width", graph_2_width )
+    .attr("height", graph_2_height + margin.top + margin.bottom*2)
     .append("g")
-    .attr("transform", `translate(${graph_2_width/2 -50}, ${graph_2_height/2 + 50})`)
+    .attr("transform", `translate(${margin.left * 2}, ${margin.top * 4.8})`)
 // set the dimensions and margins of the graph
 var width = 450,
     height = 450,
@@ -60,7 +60,7 @@ d3.csv("./data/video_games.csv").then(function(data){
         .domain(topTenData.map(function(d) {
             return d['Name']
         }))
-        .range([0, graph_1_height - margin.bottom - margin.top])
+        .range([0, graph_1_height - margin.bottom ])
         .padding(0.1);
 
     svg1.append("g")
@@ -100,27 +100,19 @@ d3.csv("./data/video_games.csv").then(function(data){
         });
 
     svg1.append("text")
-        .attr("transform", `translate(${graph_1_width/2}, ${graph_1_height/2})`)       // HINT: Place this at the bottom middle edge of the graph - use translate(x, y) that we discussed earlier
+        .attr("transform", `translate(${graph_1_width/4}, ${graph_1_height/1.1})`)       // HINT: Place this at the bottom middle edge of the graph - use translate(x, y) that we discussed earlier
         .style("text-anchor", "middle")
         .text("Global Sales (millions USD)");
     // Adds y-axis label
     svg1.append("text")
-        .attr("transform", `translate(0, -10)`)       // HINT: Place this at the center left edge of the graph - use translate(x, y) that we discussed earlier
+        .attr("transform", `translate(-60, -10)`)       // HINT: Place this at the center left edge of the graph - use translate(x, y) that we discussed earlier
         .style("text-anchor", "middle")
         .text("Name of Game");
-    // Adds chart title
-    svg1.append("text")
-        .attr("transform", `translate(${graph_1_width/2}, -10)`)       // HINT: Place this at the top middle edge of the graph - use translate(x, y) that we discussed earlier
-        .style("text-anchor", "middle")
-        .style("font-size", 15)
-        .text("Top 10 Video Games");
+
 })
 
 function update(data) {
-    var text;
-    if (text) {
-        text.remove();
-    }
+    
     d3.select(".text").remove();
 
     var pie = d3.pie()
@@ -128,7 +120,7 @@ function update(data) {
     var data_ready = pie(d3.entries(data))
     var arcGenerator = d3.arc()
     .innerRadius(0)
-    .outerRadius(radius + 200);
+    .outerRadius(radius + 210);
     // map to data
     var u = svg2.selectAll("path")
         .data(data_ready);
@@ -148,22 +140,32 @@ function update(data) {
         .style("stroke-width", "0.7px")
         .style("opacity", 1);
         
-        
+    
+    
     // Initialize the plot with the first dataset
-    text = svg2
+    svg2.selectAll("text").remove();
+    var text = svg2
         .selectAll('mySlices')
         .data(data_ready)
-        .enter()
+
+    text.enter()
         .append('text')
+        .merge(text)
+        .transition()
         .text(function(d){ 
-            return d.data.key + ": " + d.data.value.toFixed(2)
+            if (d.index < 10) {
+                return d.data.key + ": " + d.data.value.toFixed(2)
+            }
+            
         })
         .attr("transform", function(d) { 
             return "translate(" + arcGenerator.centroid(d) + ")";  
         })
         .style("text-anchor", "middle")
-        .style("font-size", 10);
-        
+        .style("font-size", 9);
+    
+    var toRemove = text.selectAll('text').text("KEYYYY");
+
 };
 
 function getTopTen(data) {
