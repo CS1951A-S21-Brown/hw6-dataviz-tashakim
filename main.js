@@ -18,10 +18,10 @@ let svg1 = d3.select('#graph1')
 
 let svg2 = d3.select('#graph2')
     .append("svg")
-    .attr("width", graph_2_width)
-    .attr("height", graph_2_height)
+    .attr("width", graph_2_width + margin.left + margin.right)
+    .attr("height", graph_2_height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", `translate(${graph_2_width/2}, ${graph_2_height/2})`)
+    .attr("transform", `translate(${graph_2_width/2 -50}, ${graph_2_height/2 + 50})`)
 // set the dimensions and margins of the graph
 var width = 450,
     height = 450,
@@ -128,11 +128,11 @@ function update(data) {
     var data_ready = pie(d3.entries(data))
     var arcGenerator = d3.arc()
     .innerRadius(0)
-    .outerRadius(radius);
+    .outerRadius(radius + 200);
     // map to data
     var u = svg2.selectAll("path")
         .data(data_ready);
-    
+        
     u.enter()
         .append('path')
         .merge(u)
@@ -140,15 +140,15 @@ function update(data) {
         .duration(1000)
         .attr('d', d3.arc()
             .innerRadius(0)
-            .outerRadius(radius)
-        )
+            .outerRadius(radius))
         .attr('fill', function(d){ 
             return(colors(d.data.key)) 
         })
         .attr("stroke", "white")
-        .style("stroke-width", "2px")
+        .style("stroke-width", "0.7px")
         .style("opacity", 1);
-
+        
+        
     // Initialize the plot with the first dataset
     text = svg2
         .selectAll('mySlices')
@@ -162,7 +162,8 @@ function update(data) {
             return "translate(" + arcGenerator.centroid(d) + ")";  
         })
         .style("text-anchor", "middle")
-        .style("font-size", 8);
+        .style("font-size", 10);
+        
 };
 
 function getTopTen(data) {

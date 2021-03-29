@@ -1,3 +1,17 @@
+.row {
+    display:flex;
+}
+
+.col-lg-6 {
+    flex: auto;
+}
+
+* {
+    margin-left: 20px;
+    margin-right: 20px;
+    text-align: center;
+}
+
 .header {
     padding-bottom: 20px;
     margin-bottom: 20px;
@@ -8,5 +22,6 @@
     padding-top: 20px;
     text-align: center;
 }
+
 
 /* Include any custom CSS styling here! */
