@@ -35,7 +35,7 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
     // Create a color scale
     var color2 = d3.scaleOrdinal()
       .domain(["A", "B", "C" ])
-      .range([ "#402D54", "#D18975", "#8FD175"])
+      .range([ "#fc3408", "#0c2aed", "#fc3408"])
 
     // Add a scale for bubble size
     var size = d3.scaleLinear()
@@ -48,12 +48,12 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
         .data(t.features)
         .enter()
         .append("path")
-          .attr("fill", "#b8b8b8")
+          .attr("fill", "#5fa83e")
           .attr("d", d3.geoPath()
               .projection(projection)
           )
-        .style("stroke", "black")
-        .style("opacity", .3)
+        .style("stroke", "grey")
+        .style("opacity", .4)
 
     // Add circles:
 
@@ -61,12 +61,12 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
         .select('body')
         .append('div')
         .attr('class', 'd3-tooltip')
+        .style('background', 'rgba(0,0,0,0.6)')
+        .style('visibility', 'hidden')
         .style('position', 'absolute')
         .style('z-index', '10')
-        .style('visibility', 'hidden')
-        .style('padding', '10px')
-        .style('background', 'rgba(0,0,0,0.6)')
         .style('border-radius', '4px')
+        .style('padding', '20px')
         .style('color', '#fff')
         .text('a simple tooltip');
         
@@ -75,11 +75,21 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
       .data(markers)
       .enter()
       .append("circle")
-        .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
-        .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
-        .attr("r", function(d){ return size(d.size) })
-        .style("fill", function(d){ return color2(d.group) })
-        .attr("stroke", function(d){ return color2(d.group) })
+        .attr("cx", function(d){ 
+            return projection([d.long, d.lat])[0] 
+        })
+        .attr("cy", function(d){ 
+            return projection([d.long, d.lat])[1] 
+        })
+        .attr("r", function(d){ 
+            return size(d.size) 
+        })
+        .style("fill", function(d){ 
+            return color2(d.group) 
+        })
+        .attr("stroke", function(d){ 
+            return color2(d.group) 
+        })
         .attr("stroke-width", 3)
         .attr("fill-opacity", .3)
         .on("mouseover", function(d) {

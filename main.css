@@ -1,3 +1,5 @@
+
+
 * {
     margin-left: 10px;
     margin-right: 10px;
@@ -62,14 +64,22 @@
 	font-family: 'Orienta', sans-serif;
 }
 
+h5 {
+    margin-top: 50px;
+    font-size: 20px;
+}
+p {
+    font-size: 15px;
+}
+
 button {
     display: inline-block;
-    background-color: #7b38d8;
+    background-color: #4891f0;
     border-radius: 10px;
     border: 4px double #cccccc;
     color: #eeeeee;
     text-align: center;
-    font-size: 13px;
+    font-size: 15px;
     padding: 9px;
     width: 150px;
     transition: all 0.5s;
@@ -91,7 +101,7 @@ button {
     transition: 0.5s;
   }
   button:hover {
-    background-color: #f7c2f9;
+    background-color: #98ecaa;
   }
   button:hover span {
     padding-right: 25px;

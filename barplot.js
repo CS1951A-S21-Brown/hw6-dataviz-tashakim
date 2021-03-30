@@ -57,7 +57,8 @@ d3.csv("./data/video_games.csv").then(function(data){
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .style('font-weight','bold')
-        .attr("stroke", "black")
+        .attr("stroke", "black");
+        
 
     svg3.select('.y').transition().duration(500).delay(1300).style('opacity','1');
 
@@ -105,7 +106,7 @@ d3.csv("./data/video_games.csv").then(function(data){
             .on("mouseout", function(d) {
                 tooltip.html(``).style('visibility', 'hidden');
                 d3.select(this).style("fill", color(d.grpName));
-            })
+            });
             
 
     slice.selectAll("rect")
@@ -120,7 +121,7 @@ d3.csv("./data/video_games.csv").then(function(data){
         .data(visited.map(function(d) { return d; }))
         .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", function(d,i) { return "translate(0," + i * 20 + ")"; })
+        .attr("transform", function(d,i) { return "translate(20," + i * 40 + ")"; })
         .style("opacity","0");
 
     legend.append("rect")
@@ -136,24 +137,28 @@ d3.csv("./data/video_games.csv").then(function(data){
         .style("text-anchor", "end")
         .text(function(d) {return d; });
 
-    legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
+    legend.transition().duration(500).delay(function(d,i){ 
+        return 1300 + 100 * i; 
+    }).style("opacity","1");
             
 
     svg3.append("text")
         .attr("transform", `translate(-45,150) rotate(270)`)       // HINT: Place this at the bottom middle edge of the graph - use translate(x, y) that we discussed earlier
         .style("text-anchor", "middle")
+        .style("font-size", 16)
         .text("Global Sales (Million USD)");
     // Adds y-axis label
     svg3.append("text")
-        .attr("transform", `translate(200, 390)`)       // HINT: Place this at the center left edge of the graph - use translate(x, y) that we discussed earlier
+        .attr("transform", `translate(270, 390)`)       // HINT: Place this at the center left edge of the graph - use translate(x, y) that we discussed earlier
         .style("text-anchor", "middle")
-        .text("Genre");
+        .style("font-size", 16)
+        .text("Video Game Genre");
 
     svg3.append("text")
-        .attr("transform", `translate(480, -20)`)       // HINT: Place this at the top middle edge of the graph - use translate(x, y) that we discussed earlier
+        .attr("transform", `translate(510, -20)`)       // HINT: Place this at the top middle edge of the graph - use translate(x, y) that we discussed earlier
         .style("text-anchor", "middle")
-        .style("font-size", 18)
-        .text("Company Names");
+        .style("font-size", 19)
+        .text("Companies");
 });
 
 function getTopPublishers(data, visited, genres, publishers) {
